@@ -9,8 +9,8 @@ module enemy(
 );
 
 initial begin
-	x_enemy= 400;
-	y_enemy= 80;
+	rx_enemy= 700;
+	ry_enemy= 400;
 end
 reg [15:0] rx_enemy, ry_enemy;
 reg collision = 1'b0;
@@ -20,10 +20,10 @@ clk_1s s(.clk(clk),.clk_1s(clk_1s));
 
 
 always @(posedge clk_1s)begin
-	ry_enemy <= ry_enemy +1;
-	rx_enemy <= rx_enemy;
+	ry_enemy <= ry_enemy;
+	rx_enemy <= rx_enemy -1;
 	
-	if(ry_enemy+20 == 450 && !collision)begin
+	if(rx_enemy == 100 && !collision)begin
 		player_on = 1'b1; //if enemy reaches end and does not hit player
 		//break;
 	end
@@ -34,16 +34,17 @@ always @(posedge clk_1s)begin
 	end
 	
 	
-	if(ry_enemy >= 474 && ry_enemy+20 <= 494)  // bottom limit handeling
+	if(rx_enemy == 100)  // bottom limit handeling
 	begin
 		player_on = 1'b1;
-		ry_enemy <= 80;
+		rx_enemy <= 700;
 	end
 
 
 end
 
 assign y_enemy = ry_enemy;
+assign x_enemy = rx_enemy;
 
 endmodule
 
@@ -93,5 +94,3 @@ module clk_1s(
     end
     
 endmodule
-
-
