@@ -37,19 +37,10 @@ render r1	(.clk(clk), .x(x), .y(y), .reset(reset),
 					
 	
 
-enemy en1(.clk(clk), .x(x), .y(y), .x_enemy(x_enemy),.y_enemy(y_enemy),.enemy_on(enemy_on),.player_on(player_on));	
-player p1	(.clk_1ms(clk_1ms), .button(button), .button1(button1), 
-					.x(x), .y(y),
+enemy en1(.clk(clk), .x(x), .y(y), .reset(reset), .x_enemy(x_enemy),.y_enemy(y_enemy),.enemy_on(enemy_on),.player_on(player_on));	
+player p1	(.clk_1ms(clk_1ms), .clk(clk), .button(button), .button1(button1), 
+					.x(x), .y(y), .reset(reset),
 					.x_player(x_player), .y_player(y_player) );
 					
 
-
-
-
-
 endmodule
-
-
-
-
-
