@@ -17,7 +17,7 @@ wire [3:0] red_paddle1;
 wire [3:0] green_paddle1;
 wire [3:0] blue_paddle1;
 wire paddle1_on;
-wire [15:0] x_player, y_paddle1;
+wire [15:0] x_player, y_player;
 wire [3:0] p1_score;
 wire [1:0] game_state;
 wire [15:0] x_enemy, y_enemy;
