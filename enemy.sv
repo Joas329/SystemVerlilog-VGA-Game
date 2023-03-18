@@ -2,6 +2,7 @@ module enemy(
 	input clk,
 	
 	input reg[15:0] x,y,
+	input reset,
 	output reg[15:0] x_enemy,
 	output reg[15:0] y_enemy,
 	output enemy_on,
@@ -20,6 +21,10 @@ clk_1s s(.clk(clk),.clk_1s(clk_1s));
 
 
 always @(posedge clk_1s)begin
+	if(reset) begin
+		rx_enemy <= 700;
+		ry_enemy <= 400;
+	end
 	ry_enemy <= ry_enemy;
 	rx_enemy <= rx_enemy -1;
 	
