@@ -17,48 +17,94 @@ module render(
 
 	reg flag = 1'b0;
 	
+	//posible idea for a state machine for the game.
 	
-	always @(posedge clk)
-	begin	
-		//always output background color if nothing is being displayed on
-				r_red <= 4'h0;    // black
-				r_blue <= 4'h0;
-				r_green <= 4'h0;
+	typedef enum logic [2:0] {
+		PLAYING,
+		DEAD,
+		INITIAL
+	
+	}state_t;
+	
+	state_t state, next_state;
+	
+	initial begin
+		state <= PLAYING;;
+	end
+	
+	always@(posedge clk)begin
+		if(!reset) state <= INITIAL;
+		else state <= next_state;
+	end
+	
+	always @(posedge clk)begin
+		case(state)
+			PLAYING: begin
+				r_red <= 4'h87;    // BLUE
+				r_blue <= 4'hEB;
+				r_green <= 4'hEE;
+				
+				if(y> 0 && y < 50)begin
+					r_red <= 4'h0; //GREEN
+					r_blue <= 4'h0;
+					r_green <= 4'hFF;
+				end
 				
 				//render enemy
-				if(y>y_enemy  && y<y_enemy+20&& x> 400&& x<450)
+				if(y>y_enemy  && y<y_enemy+60&& x> x_enemy&& x<(x_enemy+100))
 				begin
-					r_red <= 4'hF; //red
+					r_red <= 4'h0; //red
 					r_blue <= 4'h0;
 					r_green <= 4'h0;
 				end
 				
 				//render player
-				if(y>440 &&y<460 && x> x_player && x< (x_player +50))
+				//Changing the render to get dynamic y values
+				if(y>y_player &&y<(y_player +60) && x> x_player && x< (x_player + 100))
 				begin
 					r_red <= 4'hF;
 					r_blue <= 4'h0; //yelow
 					r_green <= 4'hF;
-					if(y_enemy > 440 && y_enemy < 460 && ((x_player > x_enemy && x_player < x_enemy+50)||(x_player+50 > x_enemy && x_player+50 < x_enemy+50) ))begin
+					if(y>y_player+10 &&y<(y_player +50) && x> x_player+10 && x< (x_player + 90))begin
+						r_red <= 4'hF;
+						r_blue <= 4'hF; //WHITE 
+						r_green <= 4'hF;
+					end
+					if(y_enemy >= (y_player) && y_enemy <= (y_player +60 ) && ((x_player >= x_enemy && x_player <= x_enemy+100)||(x_player+100 >= x_enemy && x_player+100 <= x_enemy+100) ))begin
 						flag = 1'b1;
 					end
 					
 				end
 				
+				if(y > 460)begin
+					r_red <= 4'h0;
+					r_blue <= 4'h0;
+					r_green <= 4'hFF;
+				end
 				if(flag)begin
 					led = 1'b1;
 					r_red <= 4'hF;
 					r_blue <= 4'h0;
 					r_green <= 4'h0;
+					next_state<= DEAD;
 				end
-				
-				
-				
+				else next_state <= PLAYING;
+			end
+			INITIAL: begin
+			
+			end
+			DEAD: begin
+				led = 1'b1;
+					r_red <= 4'hF;
+					r_blue <= 4'h0;
+					r_green <= 4'h0;
 				if(!reset)begin
 					flag = 1'b0;
+					next_state <= PLAYING;
 				end
-			
-		
+				else next_state <= DEAD;
+			end
+		endcase
 	end
 
 	assign Red = (x > 144 && x <= 783 && y > 35 && y <= 514) ? r_red : 4'h0;
