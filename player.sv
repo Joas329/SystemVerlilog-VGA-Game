@@ -1,21 +1,23 @@
 module player(
 	input clk_1ms,
 	input clk,
-	input button, button1,
+	input button,
 	input reg[15:0] x, y,
-	input reset,
+	input reset, 
 	output reg [15:0] x_player,
 	output reg [15:0] y_player
 	);
 	
-	initial
-	begin
-	rx_player = 300;
-	ry_player = 420;
-	state <= GROUND;
+	initial begin
+		rx_player = 200;
+		ry_player = 420;
+		state <= INITIAL;
 	end
 	
+	logic jump;
+	
 	typedef enum logic [2:0] {
+		INITIAL,
 		UP,
 		DOWN,
 		GROUND
@@ -23,35 +25,23 @@ module player(
 	
 	 state_t state, next_state;
 	 
-	  always @(posedge clk)begin
-		if(reset) state <= GROUND;
+	always @(posedge clk) begin
+		if(~reset) state <= INITIAL;
 		else state<= next_state;
-		end
+	end
 
 	reg [15:0] rx_player;
 	reg [15:0] ry_player;
-//	always @ (posedge clk_1ms)
-//	begin
-//		if(button)begin
-//			x_player <= x_player-1; // move to the left
-//		end
-//		if(button1)begin
-//			x_player <= x_player+1;	//move to the right
-//		end
-//		
-//		
-//		if(x_player <= 264 && x_player + 50 <= 314)  // left limit handeling
-//		begin
-//			x_player <= 265;
-//		end
-//		if( x_player+50 >= 664 && x_player >= 613)begin //right limit handeling
-//			x_player <= 613;
-//		end
-//		
-//	end
 	
 	always@(posedge clk_1ms)begin
 		case(state)
+			INITIAL: begin
+				rx_player <= rx_player;
+				ry_player <= 400;
+				if(button)begin
+					next_state <= GROUND;
+				end
+			end
 			GROUND: begin
 				rx_player <= rx_player;
 				ry_player <= 400;
@@ -63,7 +53,7 @@ module player(
 			
 			UP: begin
 				ry_player <= ry_player -1;
-				if(ry_player == 50)begin
+				if(ry_player == 150)begin
 					next_state <= DOWN;
 				end
 				else next_state <= UP;
@@ -83,7 +73,4 @@ module player(
 	
 	assign y_player = ry_player;
 	assign x_player = rx_player;
-	
-	
-	
 endmodule
