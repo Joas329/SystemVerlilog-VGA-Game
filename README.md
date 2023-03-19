@@ -34,6 +34,7 @@ This module deals with tracking the position of the player based on the inputs o
 The part of the code that takes the input of the button is:
 
  ![image](https://user-images.githubusercontent.com/51135069/211236618-88a4294a-7588-4b18-af5d-7251222d1d91.png)
+ 
  ![ControllerHardware](https://user-images.githubusercontent.com/51135069/226151367-ede75b88-f56f-40a2-835c-cdf12860cef9.jpg)
 
 This meaning that the input is waiting a positive signal of 1’b1 to enable the conditional block. Hence, we can define the simple hardware of the button to produce a HIGH signal of 1’b1 once the button has been pressed. 
