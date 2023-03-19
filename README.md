@@ -1,6 +1,12 @@
 # SystemVerlilog-VGA-Game
 A simple game using the VGA module from the DE10-lite 
 
+
+
+https://user-images.githubusercontent.com/51135069/226151611-ffcadd2c-4be8-4cb0-bd44-7ed40c1cd658.mp4
+
+
+
 ## Modules:
 The videogame consists of the following modules:
 Clk_1ms
