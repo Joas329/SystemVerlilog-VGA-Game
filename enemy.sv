@@ -1,51 +1,123 @@
 module enemy(
 	input clk,
-	
 	input reg[15:0] x,y,
 	input reset,
+	input button, collision,
 	output reg[15:0] x_enemy,
 	output reg[15:0] y_enemy,
-	output enemy_on,
-	output player_on
+	output reg[10:0] counter
 );
 
 initial begin
 	rx_enemy= 700;
 	ry_enemy= 400;
+	state <=  INITIAL;
+	counter =0;
 end
 reg [15:0] rx_enemy, ry_enemy;
-reg collision = 1'b0;
-reg clk_1s;
-collision_detection c1(.clk(clk), .x_paddle1(x_paddle1),.y_paddle1(y_paddle1), .x_enemy(x_enemy),.y_enemy(y_enemy), .collision(collision));
-clk_1s s(.clk(clk),.clk_1s(clk_1s));
+reg clk_1ms;
+
+typedef enum logic [3:0]{
+	INITIAL,
+	RESET,
+	E1,
+	E2,
+	E3,
+	E4
+}state_t;
+
+state_t state, next_state;
+clk_1ms cl1 (.clk(clk), .clk_1ms(clk_1ms));
+
+always @(posedge clk)begin
+	if(~reset ) state <= INITIAL;
+	if(collision) state<= INITIAL;
+	else state <= next_state;
+end
 
 
-always @(posedge clk_1s)begin
-	if(reset) begin
-		rx_enemy <= 700;
-		ry_enemy <= 400;
-	end
-	ry_enemy <= ry_enemy;
-	rx_enemy <= rx_enemy -1;
-	
-	if(rx_enemy == 100 && !collision)begin
-		player_on = 1'b1; //if enemy reaches end and does not hit player
-		//break;
-	end
-	else if(collision) begin
-		player_on = 1'b0; //if enemy does not hit player
-		player_on = 1'b0;
-		//break;
-	end
-	
-	
-	if(rx_enemy == 100)  // bottom limit handeling
+reg key_detect;
+reg sync_key;
+reg sync_key_temp;
+reg one_shot;
+reg remt;
+reg sync_key_detect;
+	 
+	 
+always_ff @(negedge button, posedge sync_key)
 	begin
-		player_on = 1'b1;
-		rx_enemy <= 700;
+		if (sync_key) key_detect <=0;
+		else key_detect <= 1;
 	end
+	 
+always_ff @(posedge clk)begin
+	sync_key_temp <= key_detect;
+	sync_key <= sync_key_temp;
+	one_shot <= sync_key;
+	remt = sync_key & ~one_shot;
+end
 
-
+always @(posedge clk_1ms)begin
+	case(state)
+		INITIAL: begin
+			rx_enemy <= 700;
+			counter <= 0;
+			if(button) next_state <= E2;
+			else next_state <= INITIAL;
+		end
+		RESET: begin
+			rx_enemy <= 700;
+			counter <= 0;
+			next_state <= E1;
+		end
+		E1:begin
+			ry_enemy <= 400;
+			rx_enemy <= rx_enemy - 1'b1;
+			
+			if(rx_enemy == 100)  // bottom limit handeling
+			begin
+				rx_enemy <= 700;
+				counter <= counter +1;
+				next_state <= E2;
+			end
+			else next_state <= E1;
+		end
+		E2:begin
+			ry_enemy <= 300;
+			rx_enemy <= rx_enemy -1'b1;
+			
+			if(rx_enemy == 100) begin // bottom limit handeling
+				rx_enemy <= 700;
+				counter <= counter +1;
+				next_state <= E3;
+			end
+			else next_state <= E2;
+		end
+		E3:begin
+			ry_enemy <= 400;
+			rx_enemy <= rx_enemy -1'b1;
+			
+			if(rx_enemy == 100)  // bottom limit handeling
+			begin
+				rx_enemy <= 700;
+				counter <= counter +1;
+				next_state <= E4;
+			end
+			else next_state <= E3;
+		end
+		E4: begin
+			ry_enemy <= 400;
+			rx_enemy <= rx_enemy -4;
+			
+			if(rx_enemy == 100)  // bottom limit handeling
+			begin
+				rx_enemy <= 700;
+				counter <= counter +1;
+				next_state <= E1;
+			end
+			else next_state <= E4;
+		end
+	endcase
 end
 
 assign y_enemy = ry_enemy;
@@ -54,48 +126,3 @@ assign x_enemy = rx_enemy;
 endmodule
 
 
-module collision_detection(
-	input clk,
-	input reg[15:0] x_paddle1,
-	input reg[15:0] y_paddle1,
-	input reg[15:0] x_enemy,
-	input reg[15:0] y_enemy,
-	output reg collision
-);
-
-initial begin
-	collision = 1'b0;
-end
-
-	always @(posedge clk)begin
-		if((x_paddle1+50) < x_enemy && x_paddle1 > (x_enemy +50))begin
-			if(y_enemy >= 440 && y_enemy >=460)begin
-				collision = 1'b1;
-			end
-			else collision = 1'b0;
-		end
-		else collision = 1'b0;
-	end
-
-
-
-endmodule
-
-
-module clk_1s(
-    input clk,
-    output reg clk_1s = 0
-    );
-    reg [37:0] i = 0;
-    
-	 always @ (posedge clk)
-    begin
-        if (i == 349999)
-        begin
-            i <= 0;
-            clk_1s = ~clk_1s;
-        end
-        else i <= i+1;
-    end
-    
-endmodule
