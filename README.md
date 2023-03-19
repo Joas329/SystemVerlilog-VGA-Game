@@ -47,7 +47,9 @@ This module produces the two counters for the vertical and horizontal variables 
 
 ## Render
 This module renders every module and aspect of the game onto the screen by constantly checking the position of the initial coordinate that dictates each player’s character. 
- ![image](https://user-images.githubusercontent.com/51135069/211236689-f0d48e9f-813e-458d-b38a-c2a16cf10a37.png)
+![image](https://user-images.githubusercontent.com/51135069/226151191-f9d0df8e-c7ad-4050-917f-107d53f73f15.png)
+
+![image](https://user-images.githubusercontent.com/51135069/226151162-c750c589-4c79-4d91-bcf7-8fa6ccb56162.png)
 
 To correctly display the position of each aspect of the game, some initial values were calculated to keep track of the hardware boundaries based on the horizontal and vertical counter. Moreover, there have been stated two different horizontal boundaries that restrain the character from further movement and leaving the screen. Tese ones being 264 and 664 pixels.
 ### Inputs:
